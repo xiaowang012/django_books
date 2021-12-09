@@ -152,10 +152,6 @@ def search_book_by_name(request):
         else:
             return render(request, "search.html", {"form": form})
 
-#查询书本(ISBN号)
-@login_required
-def search_book_by_ISBN(request):
-    pass
 
 #删除指定书本以及书本在数据库中的记录
 @login_required
