@@ -1,0 +1,21 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登录</title>
+</head>
+   <body>
+      <form action = "/login/" method ="POST">
+         {% csrf_token %}
+         <dl>
+            <dt>用户名:</dt>
+                <p>{{ form.username }} {%if form.username.errors %}{{ form.username.errors.0 }} {% endif %}</p>
+            <dt>密码:</dt>
+                <p>{{ form.password }} {%if form.password.errors %}{{ form.password.errors.0 }} {% endif %}</p>
+         </dl>
+         <p><input style="margin-right: 77px;" type = submit value ="登录"></p>
+      </form>  
+      <a href="/register/">没有账号?去注册一个!</a>
+      
+   </body>
+</html>
+

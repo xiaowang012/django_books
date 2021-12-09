@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>录入书本</title>
+</head>
+<body>
+    <form action = "/add_book/" method = "POST" enctype= "multipart/form-data" >
+        {% csrf_token %}
+        <h3>书本录入</h3>
+        <dl>
+            <dt>书本名称:</dt>
+                <p>{{ form.book_name }} {% if form.book_name.errors %}{{ form.book_name.errors.0 }} {% endif %}{{ error }}</p>
+            <dt>书本类型:</dt>
+                 <p>{{ form.book_type }} {% if form.book_type.errors %}{{ form.book_type.errors.0 }} {% endif %}</p>
+            <dt>书本介绍:</dt>
+                <p>{{ form.book_introduction }} {% if form.book_introduction.errors %}{{ form.book_introduction.errors.0 }} {% endif %}</p>
+            <dt>出版年份:</dt>
+                <p>{{ form.issue_year }} {% if form.issue_year.errors %}{{ form.issue_year.errors.0 }} {% endif %}</p>
+            <dt>书本文件上传:</dt>
+                <!-- <input type="file" name="book_file"> -->
+                <p>{{ form.book_file }} {% if form.book_file.errors %}{{ form.book_file.errors.0 }} {% endif %}</p>
+        </dl>
+        <button>提交</button>
+    </form>
+</body>
+</html>

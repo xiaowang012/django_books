@@ -1,0 +1,16 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>home</title>
+</head>
+   <body>
+      <form action = "/home/" method = "POST">
+         <h3>书本查询</h3>
+         {% csrf_token %}
+         <dt>请输入书名:</dt>
+         <p>{{ form.book_name }} {%if form.book_name.errors %}{{ form.book_name.errors.0 }} {% endif %}</p>
+         <input style = "margin-top: 10px"  type = "submit" value = "查询" /><br>
+      </form>
+      <a  href = "/management">返回管理界面</a>
+   </body>
+</html>

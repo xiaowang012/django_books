@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+</head>
+<body>
+
+<form action="/register/" method="post" novalidate>
+    {% csrf_token %}
+    <dl>
+       <dt>用户名:</dt>
+           <p>{{ form.username1 }} {%if form.username1.errors %}{{ form.username1.errors.0 }} {% endif %}{{ error }}</p>
+       <dt>密码:</dt>
+          <p>{{ form.password1 }} {%if form.password1.errors %}{{ form.password1.errors.0 }} {% endif %}{%if clear_errors %}{{ clear_errors.0 }} {% endif %}</p>
+        <dt>再次输入密码:</dt>
+          <p>{{ form.password2 }} {%if form.password2.errors %}{{ form.password2.errors.0 }} {% endif %}{%if clear_errors %}{{ clear_errors.0 }} {% endif %}</p>
+    </dl>
+    <p><input  type = submit value ="注册"></p>
+</form>
+<a href="/login/">注册完了?去登录吧!</a>
+</body>
+</html> 
