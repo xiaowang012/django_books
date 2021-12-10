@@ -28,5 +28,7 @@ urlpatterns = [
     path('add_book/', views.add_book),
     path('home/', views.search_book_by_name),
     path('download/<book_file_name>/', views.download_book),
+    path('add_users/', views.add_users),
+    path('download_excel/', views.download_excel),
     
 ]

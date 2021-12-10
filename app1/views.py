@@ -10,13 +10,12 @@ from . import models
 import time
 import os
 import zipfile
+import xlrd
 
 
 # Create your views here.
 def host(request):
     return redirect('/login/')
-    # dic1 = {'code':200,'mothed':'get'}
-    # return JsonResponse(dic1)
     
 #登录
 def login(request):
@@ -121,11 +120,6 @@ def add_book(request):
             #return HttpResponse('验证失败！')
             return render(request, "add_book.html", {"form": form})
 
-#批量录入书本(excel)
-@login_required
-def batch_upload_book(request):
-    pass
-
 #查询书本(书名查询)
 @login_required
 def search_book_by_name(request):
@@ -180,7 +174,112 @@ def download_book(request,book_file_name):
     else:
         return HttpResponse('文件不存在!')
 
+#批量导入用户
+@login_required
+def add_users(request):
+    if request.method == "GET":
+        form = My_forms.AddUserForm
+        return render(request, "add_users.html",{"form":form})
+    elif request.method == "POST":
+        #这里实例表单需要同时传入request.POST和request.FILE 否则FileFied验证一直返回False
+        form = My_forms.AddUserForm (request.POST,request.FILES)
+        if form.is_valid():
+            user_file = request.FILES.get('user_file')
+            if user_file:
+                file_name = user_file.name
+                #判断是否为xls/xlsx文件,是则继续打开文件解析
+                if '.xls' in file_name :
+                    temp_file_name = str(time.time()) +'.xls'
+                    user_file_dir = os.getcwd()+'\\temp\\' + temp_file_name
+                    #写入指定位置
+                    with open(user_file_dir,'wb') as f:
+                        for chunk in user_file.chunks():
+                            f.write(chunk)
+                        f.close()
+                    work_book2 = xlrd.open_workbook (user_file_dir)
+                    ws = work_book2.sheet_by_name('Sheet1')
+                    if ws.row_values(0) == ['user','password']:
+                        msg_list =[]
+                        for row in range(1,ws.nrows):
+                            for col in range(1,ws.ncols):
+                                user1 = ws.cell_value(row,col-1)
+                                pass1 = ws.cell_value(row,col)
+                                ctype =ws.cell(row,col).ctype
+                                if ctype == 2:
+                                    pass1 = str(pass1).replace('.0','')
+                                if not User.objects.filter(username = user1).first():
+                                    #用户名查重
+                                    User.objects.create_user(username = user1,password = pass1)
+                                    msg = '用户: ' +user1 +' 导入成功!<br>'
+                                else:
+                                    msg = '用户: ' +user1 +' 已存在，导入失败!<br>'
+                                msg_list.append(msg)
+                        msgs = ''
+                        for msg_info in msg_list:
+                            msgs +=msg_info
+                        if msgs == '':
+                            return HttpResponse('用户表中无数据!')
+                        else:
+                            return HttpResponse(msgs)
+                    else:
+                        return HttpResponse('用户表数据格式损坏，请重新上传文件!')   
+                elif '.xlsx' in file_name:
+                    temp_file_name = str(time.time()) +'.xlsx'
+                    user_file_dir = os.getcwd()+'\\temp\\' +temp_file_name
+                    #写入指定位置
+                    with open(user_file_dir,'wb') as f:
+                        for chunk in user_file.chunks():
+                            f.write(chunk)
+                        f.close()
+                    #打开excel表格
+                    work_book2 = xlrd.open_workbook (user_file_dir)
+                    ws = work_book2.sheet_by_name('Sheet1')
+                    if ws.row_values(0) == ['user','password']:
+                        msg_list =[]
+                        for row in range(1,ws.nrows):
+                            for col in range(1,ws.ncols):
+                                user1 = ws.cell(row,col-1)
+                                pass1 = ws.cell(row,col)
+                                ctype =ws.cell(row,col).ctype
+                                if ctype == 2:
+                                    pass1 = str(pass1).replace('.0','')
+                                if not User.objects.filter(username = user1).first():
+                                    #用户名查重
+                                    User.objects.create_user(username = user1,password = pass1)
+                                    msg = '用户: ' +user1 +'导入成功!\n'
+                                else:
+                                    msg = '用户: ' +user1 +'已存在，导入失败!\n'
+                                msg_list.append(msg)
+                        msgs = ''
+                        for msg_info in msg_list:
+                            msgs +=msg_info
+                        if msgs == '':
+                            return HttpResponse('用户表中无数据!')
+                        else:
+                            return HttpResponse(msgs)
+                    else:
+                        return HttpResponse('用户表数据格式损坏，请重新上传文件!')
+                else:
+                    error = '上传的文件不是excel文件!请重新上传!'
+                    return render(request, "add_users.html", {"form": form,"error":error}) 
+            else:
+                return HttpResponse('文件不存在!')
+        else:
+            return render(request, "add_users.html", {"form": form})
 
-
+#批量导入用户的excel模板
+def download_excel(rquest):
+    excel_dir = os.getcwd()+'\\testdata\\testdata.zip'
+    if os.path.isfile(excel_dir) == True:
+        try:
+            f = open(excel_dir,'rb')
+            response =FileResponse(f)
+            response['Content-Type']='application/octet-stream'
+            response['Content-Disposition'] = 'attachment;filename=' + 'testdata.zip'
+            return response
+        except:
+            return HttpResponse('下载失败!')
+    else:
+        return HttpResponse('未知异常!')
 
 

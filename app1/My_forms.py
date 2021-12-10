@@ -38,3 +38,6 @@ class BooksForm(forms.Form):
 class SearchForm(forms.Form):
     book_name = CharField(min_length=3,max_length=100,error_messages={"required":"输入框不能为空!","min_length":"搜索内容长度不能小于3!","max_length":"搜索内容长度不能大于100!"})
      
+#导入用户表单
+class AddUserForm(forms.Form):
+    user_file = FileField(required = True,allow_empty_file = False,error_messages={"missing":"文件不能为空!","empty":"不允许上传空文件!"})
