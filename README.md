@@ -5,7 +5,6 @@
 运行项目步骤：  
 1.安装依赖包：pip install -r requirements.txt   
 2.迁移数据库：  
-windows：  
 $ python manage.py migrate   
 $ python manage.py makemigrations app1  
 $ python manage.py migrate app1  
