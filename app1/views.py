@@ -3,7 +3,7 @@ from django.http.response import HttpResponse,FileResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,permission_required
 #from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from . import My_forms
 from . import models
@@ -15,10 +15,17 @@ import xlrd
 
 # Create your views here.
 def host(request):
-    return redirect('/login/')
+    if request.session.get('is_login',None) == True:
+        return redirect('/management/')
+    else:
+        return redirect('/login/')
+    
+    
     
 #登录
 def login(request):
+    if request.session.get('is_login',None) == True:
+        return redirect('/management/')
     if request.method == "GET":
         form = My_forms.UserForm
         return render(request, "login.html",{"form":form})
@@ -32,6 +39,7 @@ def login(request):
             if not login_user_obj:
                 return render(request, "login.html", {"form": form})
             else:
+                request.session["is_login"] = True
                 auth.login(request,login_user_obj)
                 return redirect('/management/')
         else:
@@ -268,6 +276,7 @@ def add_users(request):
             return render(request, "add_users.html", {"form": form})
 
 #批量导入用户的excel模板
+@login_required
 def download_excel(rquest):
     excel_dir = os.getcwd()+'\\testdata\\testdata.zip'
     if os.path.isfile(excel_dir) == True:
@@ -282,4 +291,7 @@ def download_excel(rquest):
     else:
         return HttpResponse('未知异常!')
 
+#权限报错
+def error(request):
+    return HttpResponse('403,您无权访问此页面!')
 

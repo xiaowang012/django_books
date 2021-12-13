@@ -11,3 +11,4 @@ class Books(models.Model):
     issue_year = IntegerField()
     book_file_name = CharField(max_length=100)
     add_book_time = CharField(max_length=100)
+
