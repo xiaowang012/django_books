@@ -1,6 +1,6 @@
 #coding=utf-8
 from django.http.response import HttpResponse,FileResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required,permission_required
@@ -11,7 +11,33 @@ import time
 import os
 import zipfile
 import xlrd
+from django.contrib.auth.models import Permission as PER
+from django.contrib.contenttypes.models import ContentType
 
+
+def add_permissions(user_id):
+    #普通用户只有下载书本和查找书本的权限，登录，注册不做限制
+    user = get_object_or_404(User, pk = user_id)
+    #清除权限
+    user.user_permissions.clear()
+    content_type = ContentType.objects.get_for_model(models.Permission)
+    #自定义的查询视图的权限
+    permission1 = PER.objects.get(
+        codename='views_searchbook',
+        content_type=content_type,
+    )
+    #自定义的下载书本的权限
+    permission2 = PER.objects.get(
+        codename='views_downloadbook',
+        content_type=content_type,
+    )
+    #添加这两个权限
+    user.user_permissions.add(permission1,permission2,)
+    #重新载入用户后才能生效
+    user = get_object_or_404(User, pk = user_id)
+    #验证是否有下载和查询权限
+    # print(user.has_perm('app1.views_searchbook')) 
+    # print(user.has_perm('app1.views_downloadbook'))
 
 # Create your views here.
 def host(request):
@@ -19,8 +45,6 @@ def host(request):
         return redirect('/management/')
     else:
         return redirect('/login/')
-    
-    
     
 #登录
 def login(request):
@@ -61,6 +85,9 @@ def register(request):
                 if not User.objects.filter(username = username1).first():
                     #用户名查重
                     User.objects.create_user(username = username1,password = password1)
+                    userinfo = User.objects.filter(username = username1).first()
+                    #print(type(userinfo.id))
+                    add_permissions(userinfo.id)
                     return HttpResponse('注册: ' +username1 +' OK!')
                 else:
                     error = '用户:'+username1+' 已存在!'
@@ -85,7 +112,7 @@ def logout(request):
 
 #录入书本
 @login_required
-#@csrf_exempt
+@permission_required('app1.views_addbook',raise_exception=True)
 def add_book(request):
     if request.method == "GET":
         form = My_forms.BooksForm
@@ -130,6 +157,7 @@ def add_book(request):
 
 #查询书本(书名查询)
 @login_required
+@permission_required('app1.views_searchbook',raise_exception=True)
 def search_book_by_name(request):
     if request.method == "GET":
         form = My_forms.SearchForm
@@ -162,6 +190,7 @@ def delete_book(request):
 
 #下载书本
 @login_required
+@permission_required('app1.views_downloadbook',raise_exception=True)
 def download_book(request,book_file_name):
     BOOK_dir = os.getcwd()+'\\media\\' + str(book_file_name)
     zip_file_name = str(time.time())+'.zip'
@@ -184,6 +213,7 @@ def download_book(request,book_file_name):
 
 #批量导入用户
 @login_required
+@permission_required('app1.views_addusers',raise_exception=True)
 def add_users(request):
     if request.method == "GET":
         form = My_forms.AddUserForm
@@ -277,6 +307,7 @@ def add_users(request):
 
 #批量导入用户的excel模板
 @login_required
+@permission_required('app1.views_downloadexcel',raise_exception=True)
 def download_excel(rquest):
     excel_dir = os.getcwd()+'\\testdata\\testdata.zip'
     if os.path.isfile(excel_dir) == True:
@@ -290,8 +321,3 @@ def download_excel(rquest):
             return HttpResponse('下载失败!')
     else:
         return HttpResponse('未知异常!')
-
-#权限报错
-def error(request):
-    return HttpResponse('403,您无权访问此页面!')
-
