@@ -133,7 +133,8 @@ def add_book(request):
                     #print('文件名：'+book_file_name)111
                     #写入指定位置
                     
-                    BOOK_dir = os.getcwd()+'\\media\\' + book_file_name
+                    #在window和linux上自动拼接为windows的 '\\' 或者linux的'/' 
+                    BOOK_dir = os.path.join(os.getcwd(),os.sep,'media', book_file_name)
                     with open(BOOK_dir,'wb') as f:
                         for chunk in book_file.chunks():
                             f.write(chunk)
@@ -192,9 +193,11 @@ def delete_book(request):
 @login_required
 @permission_required('app1.views_downloadbook',raise_exception=True)
 def download_book(request,book_file_name):
-    BOOK_dir = os.getcwd()+'\\media\\' + str(book_file_name)
+    #在window和linux上自动拼接为windows的 '\\' 或者linux的'/' 
+    BOOK_dir = os.path.join(os.getcwd(),os.sep,'media', book_file_name)
     zip_file_name = str(time.time())+'.zip'
-    zip_file_dir = os.getcwd()+'\\media\\tempfiles\\'+zip_file_name
+    #zip_file_dir = os.getcwd()+'\\media\\tempfiles\\'+zip_file_name
+    zip_file_dir = os.path.join(os.getcwd(),os.sep,'media','tempfiles', zip_file_name)
     #为了解决传输中文名的文件时下载后无法显示文件名的问题，决定采取压缩后传输，
     if os.path.isfile(BOOK_dir) ==True:
         z = zipfile.ZipFile(zip_file_dir, 'w', zipfile.ZIP_DEFLATED)
@@ -228,7 +231,9 @@ def add_users(request):
                 #判断是否为xls/xlsx文件,是则继续打开文件解析
                 if '.xls' in file_name :
                     temp_file_name = str(time.time()) +'.xls'
-                    user_file_dir = os.getcwd()+'\\temp\\' + temp_file_name
+                    #linux 和Windows跨平台路劲
+                    #user_file_dir = os.getcwd()+'\\temp\\' + temp_file_name
+                    user_file_dir = os.path.join(os.getcwd(),os.sep,'temp',temp_file_name)
                     #写入指定位置
                     with open(user_file_dir,'wb') as f:
                         for chunk in user_file.chunks():
@@ -263,7 +268,7 @@ def add_users(request):
                         return HttpResponse('用户表数据格式损坏，请重新上传文件!')   
                 elif '.xlsx' in file_name:
                     temp_file_name = str(time.time()) +'.xlsx'
-                    user_file_dir = os.getcwd()+'\\temp\\' +temp_file_name
+                    user_file_dir = os.path.join(os.getcwd(),os.sep,'temp',temp_file_name)
                     #写入指定位置
                     with open(user_file_dir,'wb') as f:
                         for chunk in user_file.chunks():
@@ -309,7 +314,8 @@ def add_users(request):
 @login_required
 @permission_required('app1.views_downloadexcel',raise_exception=True)
 def download_excel(rquest):
-    excel_dir = os.getcwd()+'\\testdata\\testdata.zip'
+    #excel_dir = os.getcwd()+'\\testdata\\testdata.zip'
+    excel_dir = os.path.join(os.getcwd(),os.sep,'testdata','testdata.zip')
     if os.path.isfile(excel_dir) == True:
         try:
             f = open(excel_dir,'rb')
