@@ -1,21 +1,44 @@
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>登录</title>
+	<meta charset="utf-8"> 
+	<title>Login</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">  
+	<script src="/static/js/jquery/jquery.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
 </head>
-   <body>
-      <form action = "/login/" method ="POST">
-         {% csrf_token %}
-         <dl>
-            <dt>用户名:</dt>
-                <p>{{ form.username }} {%if form.username.errors %}{{ form.username.errors.0 }} {% endif %}</p>
-            <dt>密码:</dt>
-                <p>{{ form.password }} {%if form.password.errors %}{{ form.password.errors.0 }} {% endif %}</p>
-         </dl>
-         <p><input style="margin-right: 77px;" type = submit value ="登录"></p>
-      </form>  
-      <a href="/register/">没有账号?去注册一个!</a>
-      
-   </body>
+<style>
+p{color: red; line-height: 50px;}
+</style>
+<body>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-4 column">
+            </div>
+            <div class="col-md-4 column">
+                <div class="page-header">
+                    <h1>
+                        Login <small></small>
+                    </h1>
+                </div>
+                <form role="form" action="/login/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                         <label for="username">Username:</label><input type="text" class="form-control" name="username" /><p>{%if form.username.errors %}{{ form.username.errors.0 }} {% endif %}</p>
+                    </div>
+                    <div class="form-group">
+                         <label for="password">Password:</label><input type="password" class="form-control" name="password" /><p>{%if form.password.errors %}{{ form.password.errors.0 }} {% endif %}</p>
+                    </div>
+                    <button  type="submit" class="btn btn-default btn-primary">Login</button>
+                    <p> {%if dic1 %}{{ dic1.message }} {% endif %}</p>
+                </form>
+                <a style="line-height: 50px;font-size: larger;margin-left: 70px;" href="/register">No Account? Sign up!</a>
+            </div>
+            <div class="col-md-4 column">
+            </div>
+        </div>
+    </div>
+</body> 
 </html>
+
 

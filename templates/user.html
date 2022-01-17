@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>User management</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">  
+	<script src="/static/js/jquery/jquery.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+</head>
+<style>
+    p{color: red; line-height: 50px;}
+</style>
+<body>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+                    <div class="navbar-header">
+                         <button style="font-size: larger;" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Management</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+						<li class="active" >
+							 <a href="/management/user">User</a>
+						</li>
+						<li>
+							 <a href="/management/book">Book</a>
+						</li>
+                        <li>
+                            <a href="/management/system">System</a>
+                        </li>
+                    </ul>
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a style="margin-right: 100px;" href="/home">Go Back</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <h3 style="margin-top: 80px;" class="text-center">
+                    User Management Page
+                </h3>
+                <div style="float: left;" class="container">
+                    <div class="row clearfix">
+                        <div style="padding-left:0" class="col-md-12 column">
+                            <div style="margin-right: 15px;" class="{{ dic1['style'] }}">
+                                
+                                <h4>
+                                    {{ dic1['title'] }}
+                                </h4> <strong>{{ dic1['title'] }}</strong>{{ dic1['message'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                <a id="modal-207274" href="/management/refresh?cur_url=/management/user" role="button" class="btn btn-default btn-primary" style="float:right;font-size: smaller;" data-toggle="modal">Refresh</a>
+                <a id="modal-207274" href="#modal-container-207274" role="button" class="btn btn-default" style="float:right;font-size: smaller;" data-toggle="modal">AddUser</a>
+                <div class="modal fade" id="modal-container-207274" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    Add Users
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="/management/user/addusers" method="post" enctype = "multipart/form-data">
+                                    {{ form.csrf_token }}
+                                    <div class="form-group">
+                                            <label for="file">File input</label><input type="file" name="file" />
+                                        <p class="help-block">
+                                            The template download link is as follows:
+                                            <a href="/management/user/addusers/download">Click to download</a>
+                                        </p>
+                                    </div>
+                                    <button type="submit" class="btn btn-default btn-primary">Submit</button>
+                                </form>
+                                <p>{%if form.file.errors%}{{ form.file.errors[0] }} {% endif %}</p>
+                            </div>
+                        </div> 
+                    </div>
+                </div> 
+
+                <table style="margin-top: 20px;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                ID
+                            </th>
+                            <th>
+                                Username
+                            </th>
+                            <th>
+                                Registration time
+                            </th>
+                            <th>
+                                User group
+                            </th>
+                            <th>
+                                Delete
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in user_list %}
+                            <tr class="{{ item['style'] }}">
+                                <td>
+                                    {{ item['id'] }}
+                                </td>
+                                <td>
+                                    {{ item['username'] }}
+                                </td>
+                                <td>
+                                    {{ item['add_time'] }}
+                                </td>
+                                <td>
+                                    {{ item['group'] }} <a style="margin-left: 20px;" href="/management/user/changegroup?username={{ item['username'] }}&group={{ item['group'] }}">change user group</a>
+                                </td>
+                                <td>
+                                    <a role="button" class="btn btn-default btn-primary" style="font-size: smaller;" href="/management/user/delete?username={{ item['username'] }}">Delete</a>
+                                </td>
+                            </tr>  
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="row clearfix">
+                    <div class="col-md-2 column">
+                    </div>
+                    <div class="col-md-6 column">
+                    </div>
+                    <div class="col-md-4 column">
+                        <ul class="pagination">
+                            <li class="{{ dic1['active_Prev'] }}">
+                                {% if dic1['current_page_number'] <=2  %}
+                                    <a href="/management/user/page?number=1">Prev</a>
+                                {% else %}
+                                    <a href="/management/user/page?number={{ dic1['current_page_number']-1 }}">Prev</a>
+                                {% endif %}
+                               </li>
+                            <li class="{{ dic1['active1'] }}">
+                                 <a href="/management/user/page?number=1">1</a>
+                            </li>
+                            <li class="{{ dic1['active2'] }}">
+                                 <a href="/management/user/page?number=2">2</a>
+                            </li>
+                            <li class="{{ dic1['active3'] }}">
+                                 <a href="/management/user/page?number=3">3</a>
+                            </li>
+                            <li class="{{ dic1['active4'] }}">
+                                 <a href="/management/user/page?number=4">4</a>
+                            </li>
+                            <li class="{{ dic1['active5'] }}">
+                                 <a href="/management/user/page?number=5">5</a>
+                            </li>
+                            <li class="{{ dic1['active_next'] }}">
+                                 <a href="/management/user/page?number={{ dic1['current_page_number']+1 }}">Next</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body> 
+</html>

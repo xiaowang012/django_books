@@ -10,21 +10,21 @@ from django.forms.widgets import  PasswordInput
 #定义表单
 #登录表单
 class UserForm(forms.Form):
-    username = forms.CharField(min_length=3,max_length=10,error_messages={"required":"用户名不能为空!","min_length":"用户名长度不能小于3！","max_length":"用户名长度不能大于10！"})
-    password = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3！","max_length":"密码长度不能大于10！"})
+    username = forms.CharField(min_length=3,max_length=10,error_messages={"required":"用户名不能为空!","min_length":"用户名长度不能小于3!","max_length":"用户名长度不能大于10!"})
+    password = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
 
 #注册表单  
 class RegisterForm(forms.Form):
-    username1 = forms.CharField(min_length=3,max_length=10,error_messages={"required":"用户名不能为空!","min_length":"用户名长度不能小于3！","max_length":"用户名长度不能大于10！"})
-    password1 = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3！","max_length":"密码长度不能大于10！"})
-    password2 = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3！","max_length":"密码长度不能大于10！"})
+    username = forms.CharField(min_length=3,max_length=10,error_messages={"required":"用户名不能为空!","min_length":"用户名长度不能小于3!","max_length":"用户名长度不能大于10!"})
+    password = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
+    password1 = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
     def clean(self):  # 全局钩子 确认两次输入的密码是否一致。
-        val = self.cleaned_data.get("password1")
-        r_val = self.cleaned_data.get("password2")
+        val = self.cleaned_data.get("password")
+        r_val = self.cleaned_data.get("password1")
         if val == r_val:
             return self.cleaned_data
         else:
-            raise ValidationError("密码不一致。")
+            raise ValidationError("两次输入的密码不一致!")
 
 #录入书本信息的表单
 class BooksForm(forms.Form):
@@ -35,7 +35,7 @@ class BooksForm(forms.Form):
     book_file = FileField(required = True,allow_empty_file = False,error_messages={"missing":"文件不能为空!","empty":"不允许上传空文件!"})
 
 #查询书本的表单
-class SearchForm(forms.Form):
+class SearchBookForm(forms.Form):
     book_name = CharField(min_length=3,max_length=100,error_messages={"required":"输入框不能为空!","min_length":"搜索内容长度不能小于3!","max_length":"搜索内容长度不能大于100!"})
      
 #导入用户表单

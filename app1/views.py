@@ -11,45 +11,47 @@ import time
 import os
 import zipfile
 import xlrd
+import random
 from django.contrib.auth.models import Permission as PER
 from django.contrib.contenttypes.models import ContentType
 
+#定义一个全局变量BOOK_NAME用于解决查询书本分页的问题
+BOOK_NAME = []
+# def add_permissions(user_id):
+#     #普通用户只有下载书本和查找书本的权限，登录，注册不做限制
+#     user = get_object_or_404(User, pk = user_id)
+#     #清除权限
+#     user.user_permissions.clear()
+#     content_type = ContentType.objects.get_for_model(models.Permission)
+#     #自定义的查询视图的权限
+#     permission1 = PER.objects.get(
+#         codename='views_searchbook',
+#         content_type=content_type,
+#     )
+#     #自定义的下载书本的权限
+#     permission2 = PER.objects.get(
+#         codename='views_downloadbook',
+#         content_type=content_type,
+#     )
+#     #添加这两个权限
+#     user.user_permissions.add(permission1,permission2,)
+#     #重新载入用户后才能生效
+#     user = get_object_or_404(User, pk = user_id)
+#     #验证是否有下载和查询权限
+#     # print(user.has_perm('app1.views_searchbook')) 
+#     # print(user.has_perm('app1.views_downloadbook'))
 
-def add_permissions(user_id):
-    #普通用户只有下载书本和查找书本的权限，登录，注册不做限制
-    user = get_object_or_404(User, pk = user_id)
-    #清除权限
-    user.user_permissions.clear()
-    content_type = ContentType.objects.get_for_model(models.Permission)
-    #自定义的查询视图的权限
-    permission1 = PER.objects.get(
-        codename='views_searchbook',
-        content_type=content_type,
-    )
-    #自定义的下载书本的权限
-    permission2 = PER.objects.get(
-        codename='views_downloadbook',
-        content_type=content_type,
-    )
-    #添加这两个权限
-    user.user_permissions.add(permission1,permission2,)
-    #重新载入用户后才能生效
-    user = get_object_or_404(User, pk = user_id)
-    #验证是否有下载和查询权限
-    # print(user.has_perm('app1.views_searchbook')) 
-    # print(user.has_perm('app1.views_downloadbook'))
-
-# Create your views here.
+# 127.0.0.1:5000 (仅输入IP+PORT) 判断是否在登录状态
 def host(request):
     if request.session.get('is_login',None) == True:
-        return redirect('/management/')
+        return redirect('/home/')
     else:
         return redirect('/login/')
     
-#登录
+#用户登录
 def login(request):
-    if request.session.get('is_login',None) == True:
-        return redirect('/management/')
+    # if request.session.get('is_login',None) == True:
+        # return redirect('/management/')
     if request.method == "GET":
         form = My_forms.UserForm
         return render(request, "login.html",{"form":form})
@@ -61,15 +63,19 @@ def login(request):
             #authenticate
             login_user_obj = auth.authenticate(username = username, password = password)
             if not login_user_obj:
-                return render(request, "login.html", {"form": form})
+                #定义密码错误信息
+                dic1 = {}
+                dic1['message'] = '用户名或密码错误!'
+                return render(request, "login.html", {"form": form,"dic1":dic1})
             else:
                 request.session["is_login"] = True
                 auth.login(request,login_user_obj)
-                return redirect('/management/')
+                return redirect('/home/')
+                
         else:
             return render(request, "login.html", {"form": form})
 
-#注册
+#用户注册
 def register(request):
     if request.method == "GET":
         form = My_forms.RegisterForm
@@ -77,38 +83,132 @@ def register(request):
     elif request.method == "POST":
         form = My_forms.RegisterForm(request.POST)
         if form.is_valid():
-            username1 = request.POST.get("username1")
+            username = request.POST.get("username")
+            password = request.POST.get("password")
             password1 = request.POST.get("password1")
-            password2 = request.POST.get("password2")
             #创建用户
-            if password1 == password2:
-                if not User.objects.filter(username = username1).first():
-                    #用户名查重
-                    User.objects.create_user(username = username1,password = password1)
-                    userinfo = User.objects.filter(username = username1).first()
-                    #print(type(userinfo.id))
-                    add_permissions(userinfo.id)
-                    return HttpResponse('注册: ' +username1 +' OK!')
+            if password == password1:
+                if not User.objects.filter(username = str(username)).first():
+                    #用户名查重,如果查不到，正常创建用户
+                    try:
+                        User.objects.create_user(username = str(username),password = str(password))
+                    except:
+                        #返回对应的错误提示信息到页面
+                        message = ' 注册: ' + str(username) +' Failed!'
+                        dic2 = {'frame_type':'alert alert-dismissable alert-danger','title':'ERROR ','message':message}
+                        return render(request,'register.html',{'form':form,'dic2':dic2})
+                    else:
+                        #返回对应的注册成功提示信息到页面
+                        message = ' 注册: ' + str(username) +' SUCCESS!'
+                        dic2 = {'frame_type':'alert alert-success alert-dismissable','title':'SUCCESS ','message':message}
+                        return render(request,'register.html',{'form':form,'dic2':dic2})
                 else:
-                    error = '用户:'+username1+' 已存在!'
+                    error = '用户: '+ str(username) + ' 已存在! 请不要重复注册!'
                     return render(request, "register.html", {"form": form,"error":error})
             else:
-                error = '未知错误!'
-                return render(request, "register.html", {"form": form,"error":error})
+                error_msg = '两次输入的密码不一致!'
+                return render(request, "register.html", {"form": form,"error":error_msg})
         else:
-            clear_errors = form.errors.get("__all__")
-            return render(request, "register.html", {"form": form,"clear_errors":clear_errors})
+            #print(form.errors)
+            #未通过表单验证
+            clear_err = form.errors.get('__all__')
+            #print(clear_err)
+            if clear_err:
+                clear_err = str(clear_err).replace('<ul class="errorlist nonfield"><li>','').replace('</li></ul>','')
+            return render(request, "register.html", {"form": form,'clear_err':clear_err})
+            
+#用户登出
+@login_required
+def logout(request):
+    auth.logout(request)
+    return redirect('/login/')
+
+#用户主页
+def home(request):
+    if request.method == 'GET':
+        #查询书本的表单
+        form = My_forms.SearchBookForm
+        #获取当前用户名
+        username = request.user
+        #print(username)
+        #定义前端样式的字典
+        dic1 = {'username':username,'active1':'active','active2':'','active3':'',\
+        'active4':'','active5':'','current_page_number':1}
+        #在book 表中查询书本条目(5条)
+        book_info = models.Books.objects.all()[:5]
+        #加入每一行数据的的样式到queryset中
+        for data in book_info:
+            data.style = random.choice(['success','info','warning','error'])
+        return render(request,'home.html',{'form':form,'list1':book_info,'dic1':dic1})
+
+#用户主页翻页
+def home_page(request):
+    number = request.GET.get('number')
+    try:
+        number = int(number)
+    except:
+        return HttpResponse('Parameters error')
+    else:
+        #定义form
+        form = My_forms.SearchBookForm()
+        #查数据表，设置限制返回的起始值和结束值
+        search_start_num = (number-1)*5
+        search_end_num = number*5
+        #根据页码查询指定数据
+        book_info = models.Books.objects.all()[search_start_num:search_end_num]
+        #加入每一行数据的的样式到queryset中
+        for data in book_info:
+            data.style = random.choice(['success','info','warning','error'])
+        #渲染到前端
+        #获取当前用户名
+        username = request.user
+        #print(username)
+        #定义前端样式的字典
+        dic1 = {'username':username,'active1':'','active2':'','active3':'',\
+        'active4':'','active5':'','current_page_number':number}
+        #根据页码改变分页的样式
+        if 1<=number<=5:
+            dic1['active'+str(number)] = 'active'
+        elif number>5:
+            dic1['active_next'] = 'active'
+        return render(request,'home.html',{'form':form,'list1':book_info,'dic1':dic1})
+        
+#用户查询书本(书名查询)
+@login_required
+# @permission_required('app1.views_searchbook',raise_exception=True)
+def search_book(request):
+    if request.method == "POST":
+        form = My_forms.SearchBookForm (request.POST)
+        if form.is_valid():
+            book_name = request.POST.get("book_name")
+            BOOK_NAME.append(book_name)
+            #查数据
+            book_info = models.Books.objects.filter(book_name = book_name)[0:5]
+            #print(res)
+            if book_info:
+                #获取当前用户名
+                username = request.user
+                #加入每一行数据的的样式到queryset中
+                for data in book_info:
+                    data.style = random.choice(['success','info','warning','error'])
+                #定义前端样式的字典
+                dic1 = {'username':username,'active1':'active','active2':'','active3':'',\
+                'active4':'','active5':'','current_page_number':1}
+                return render(request,'home_search.html',{'form':form,'dic':dic1,'list1':book_info})
+            else:
+                book_info = []
+                return HttpResponse('没查到数据!')
+        else:
+            return render(request, "home_search.html", {"form": form})
+        
+#用户查询书本分页
+
+
 
 #图书后台管理
 @login_required
 def management(request):
     return render(request,'management.html')
-
-#登出
-@login_required
-def logout(request):
-    auth.logout(request)
-    return redirect('/login/')
 
 #录入书本
 @login_required
@@ -154,33 +254,6 @@ def add_book(request):
         else:
             #return HttpResponse('验证失败！')
             return render(request, "add_book.html", {"form": form})
-
-#查询书本(书名查询)
-@login_required
-@permission_required('app1.views_searchbook',raise_exception=True)
-def search_book_by_name(request):
-    if request.method == "GET":
-        form = My_forms.SearchForm
-        return render(request, "search.html",{"form":form})
-    elif request.method == "POST":
-        form = My_forms.SearchForm (request.POST)
-        if form.is_valid():
-            book_name = request.POST.get("book_name")
-            #print(book_name)
-            if book_name:
-                res = models.Books.objects.filter(book_name = book_name)
-                #print(res)
-                if res:
-                    book_type_dic = {'1':'Python','2':'C','3':'C++','4':'Java','5':'Javascript','6':'Linux'}
-                    dic1 = res[0]
-                    dic1.book_type = book_type_dic[dic1.book_type]
-                    return render(request,'table.html',{'dic':dic1})
-                else:
-                    return HttpResponse('没查到数据!')
-            else:
-                return HttpResponse('查询错误!')
-        else:
-            return render(request, "search.html", {"form": form})
 
 #删除指定书本以及书本在数据库中的记录
 @login_required
