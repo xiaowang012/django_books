@@ -13,13 +13,13 @@
 			<div class="col-md-12 column">
 				<div class="jumbotron">
 					<h1>
-						Hello,{{ dic1['username'] }}!
+						Hello,{{ dic1.username }}!
 					</h1>
 					<p>
 						This is a library system where you can search for books and download them.
 					</p>
 					<p>
-						 <a class="btn btn-primary btn-large" href="/management/user">Management</a><a style="margin-left: 20px;" class="btn btn-primary btn-large" href="/logout">Logout</a>
+						 <a class="btn btn-primary btn-large" href="/management/user/">Management</a><a style="margin-left: 20px;" class="btn btn-primary btn-large" href="/logout/">Logout</a>
 					</p>
 				</div>
 
@@ -69,8 +69,8 @@
 								</ul>
 							</li>
 						</ul>
-						<form class="navbar-form navbar-left" role="search" action="/home/search/page?number=1" method="post" >
-							{{ form.csrf_token }}
+						<form class="navbar-form navbar-left" role="search" action="/home/search/page?num=1" method="post" >
+							{% csrf_token %}
 							<div class="form-group">
 								<input type="text" class="form-control" name = "book_name" />
 							</div> <button type="submit" class="btn btn-default">Search</button><a style="margin-left: 20px;" type="submit" class="btn btn-default" href="/home" >Reset</a>
@@ -108,24 +108,24 @@
 					</thead>
 					<tbody>
 						{% for item in list1 %}
-							<tr class="{{ item['style'] }}" >
+							<tr class="{{ item.style }}" >
 								<td>
-									{{ item['id'] }}
+									{{ item.id }}
 								</td>
 								<td>
-									{{ item['book_name'] }}
+									{{ item.book_name }}
 								</td>
 								<td>
-									{{ item['issue_year'] }}
+									{{ item.issue_year }}
 								</td>
 								<td>
-									{{ item['book_type'] }}
+									{{ item.book_type }}
 								</td>
 								<td>
-									{{ item['number_of_downloads'] }}
+									{{ item.number_of_downloads }}
 								</td>
 								<td>
-									 <a role="button" class="btn btn-default btn-primary" style="font-size: smaller;" href="/book/download?code={{ item['id'] }}">download</a>
+									 <a role="button" class="btn btn-default btn-primary" style="font-size: smaller;" href="/book/download?code={{ item.id }}">download</a>
 								</td>
 							</tr>  
 						{% endfor %}
@@ -140,30 +140,30 @@
 			</div>
 			<div class="col-md-4 column">
 				<ul class="pagination">
-					<li class="{{ dic1['active_Prev'] }}">
-						{% if dic1['current_page_number'] <=2  %}
-							<a href="/home/search/type?type_1={{ dic1['type'] }}&number=1">Prev</a>
+					<li class="{{ dic1.active_Prev }}">
+						{% if dic1.current_page_number <= 2 %}
+							<a href="/home/search/type?type_1={{ dic1.type }}&number=1">Prev</a>
 						{% else %}
-							<a href="/home/search/type?type_1={{ dic1['type'] }}&number={{ dic1['current_page_number']-1 }}">Prev</a>  
+							<a href="/home/search/type?type_1={{ dic1.type }}&number={{ dic1.current_page_number|add:-1 }}">Prev</a>  
 						{% endif %}
 				   	</li>
-					<li class="{{ dic1['active1'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number=1">1</a>
+					<li class="{{ dic1.active1 }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number=1">1</a>
 					</li>
-					<li class="{{ dic1['active2'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number=2">2</a>
+					<li class="{{ dic1.active2 }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number=2">2</a>
 					</li>
-					<li class="{{ dic1['active3'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number=3">3</a>
+					<li class="{{ dic1.active3 }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number=3">3</a>
 					</li>
-					<li class="{{ dic1['active4'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number=4">4</a>
+					<li class="{{ dic1.active4 }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number=4">4</a>
 					</li>
-					<li class="{{ dic1['active5'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number=5">5</a>
+					<li class="{{ dic1.active5 }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number=5">5</a>
 					</li>
-					<li class="{{ dic1['active_next'] }}">
-						 <a href="/home/search/type?type_1={{ dic1['type'] }}&number={{ dic1['current_page_number']+1 }}">Next</a>
+					<li class="{{ dic1.active_next }}">
+						 <a href="/home/search/type?type_1={{ dic1.type }}&number={{ dic1.current_page_number|add:1 }}">Next</a>
 					</li>
 				</ul>
 			</div>

@@ -69,7 +69,7 @@
 								</ul>
 							</li>
 						</ul>
-						<form class="navbar-form navbar-left" role="search" action="/home/search/page?number=1" method="post" >
+						<form class="navbar-form navbar-left" role="search" action="/home/search/page?num=1" method="post" >
 							{% csrf_token %}
 							<div class="form-group">
 								<input type="text" class="form-control" name = "book_name" />
@@ -78,8 +78,6 @@
 								<p style="color:red">{%if form.book_name.errors %}{{ form.book_name.errors.0 }} {% endif %}</p>
 							 </div>
 						</form>
-						
-						
 					</div>
 					
 				</nav>
@@ -142,28 +140,28 @@
 				<ul class="pagination">
 					<li class="{{ dic1.active_Prev }}">
 						{% if dic1.current_page_number <= 2  %}
-							<a href="/home/search/page?number=1">Prev</a>
+							<a href="/home/search/page?num=1">Prev</a>
 						{% else %}
-							<a href="/home/search/page?number={{ dic1.current_page_number|add:-1 }}">Prev</a>
+							<a href="/home/search/page?num={{ dic1.current_page_number|add:-1 }}">Prev</a>
 						{% endif %}
 				   	</li>
 					<li class="{{ dic1.active1 }}">
-						 <a href="/home/search/page?number=1">1</a>
+						 <a href="/home/search/page?num=1">1</a>
 					</li>
 					<li class="{{ dic1.active2 }}">
-						 <a href="/home/search/page?number=2">2</a>
+						 <a href="/home/search/page?num=2">2</a>
 					</li>
 					<li class="{{ dic1.active3 }}">
-						 <a href="/home/search/page?number=3">3</a>
+						 <a href="/home/search/page?num=3">3</a>
 					</li>
 					<li class="{{ dic1.active4 }}">
-						 <a href="/home/search/page?number=4">4</a>
+						 <a href="/home/search/page?num=4">4</a>
 					</li>
 					<li class="{{ dic1.active5 }}">
-						 <a href="/home/search/page?number=5">5</a>
+						 <a href="/home/search/page?num=5">5</a>
 					</li>
 					<li class="{{ dic1.active_next }}">
-						 <a href="/home/search/page?number={{ dic1.current_page_number|add:1 }}">Next</a>
+						 <a href="/home/search/page?num={{ dic1.current_page_number|add:1 }}">Next</a>
 					</li>
 				</ul>
 			</div>

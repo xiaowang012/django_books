@@ -86,7 +86,7 @@ DATABASES = {
     { 
         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
         'NAME': 'django_database', # 数据库名称
-        'HOST': 'localhost', # 数据库地址，本机 ip 地址 127.0.0.1 
+        'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1 
         'PORT': 3306,
         'USER': 'root',  # 数据库用户名
         'PASSWORD': '123456', # 数据库密码
@@ -121,13 +121,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+#关闭使用默认时区(美国时间)
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

@@ -7,8 +7,8 @@ from django.db.models.fields import CharField, IntegerField, TextField, TimeFiel
 class Books(models.Model):
     book_name = CharField(max_length=50)
     book_type = CharField(max_length=50)
-    book_introduction = TextField()
-    issue_year = IntegerField()
+    book_introduction = TextField(max_length=200)
+    issue_year = CharField(max_length=50)
     number_of_downloads = IntegerField()
     book_file_name = CharField(max_length=100)
     add_book_time = CharField(max_length=100)

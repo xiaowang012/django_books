@@ -68,13 +68,13 @@
 								</ul>
 							</li>
 						</ul>
-						<form class="navbar-form navbar-left" role="search" action="/home/search/page?number=1" method="post" >
+						<form class="navbar-form navbar-left" role="search" action="/home/search/page?num=1" method="post" >
 							{% csrf_token %}
 							<div class="form-group">
 								<input type="text" class="form-control" name = "book_name" />
 							</div> <button type="submit" class="btn btn-default">Search</button><a style="margin-left: 20px;" type="submit" class="btn btn-default" href="/home/" >Reset</a>
 							<div class="contain">
-								<p style="color:red">{%if dic1.errors %}{{ dic1.errors }} {% endif %}</p>
+								<p style="color:red">{%if form.book_name.errors %}{{ form.book_name.errors.0 }} {% endif %}</p>
 							 </div>
 						</form>
 					</div>
