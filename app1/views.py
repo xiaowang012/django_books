@@ -1,10 +1,9 @@
 #coding=utf-8
 from django.http.response import HttpResponse,FileResponse
-from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required,permission_required
-#from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.contrib.auth.decorators import login_required
 from . import My_forms
 from . import models
 import time
@@ -12,35 +11,57 @@ import os
 import zipfile
 import xlrd
 import random
-from django.contrib.auth.models import Permission as PER
-from django.contrib.contenttypes.models import ContentType
+from functools import wraps
 
 #定义一个全局变量BOOK_NAME用于解决查询书本分页的问题
 BOOK_NAME = []
 
-# def add_permissions(user_id):
-#     #普通用户只有下载书本和查找书本的权限，登录，注册不做限制
-#     user = get_object_or_404(User, pk = user_id)
-#     #清除权限
-#     user.user_permissions.clear()
-#     content_type = ContentType.objects.get_for_model(models.Permission)
-#     #自定义的查询视图的权限
-#     permission1 = PER.objects.get(
-#         codename='views_searchbook',
-#         content_type=content_type,
-#     )
-#     #自定义的下载书本的权限
-#     permission2 = PER.objects.get(
-#         codename='views_downloadbook',
-#         content_type=content_type,
-#     )
-#     #添加这两个权限
-#     user.user_permissions.add(permission1,permission2,)
-#     #重新载入用户后才能生效
-#     user = get_object_or_404(User, pk = user_id)
-#     #验证是否有下载和查询权限
-#     # print(user.has_perm('app1.views_searchbook')) 
-#     # print(user.has_perm('app1.views_downloadbook'))
+#校验权限的装饰器
+def permission_check(func):
+    @wraps(func)
+    def wrapper(request,*args,**kwargs):
+        '''
+        校验权限的过程:
+        1.装饰器里面每次获取一次session username
+        2.根据userid 查询是否为管理员，是则查用户组为admin，否则为others
+        3.根据admin/others查询视图set 是否包含传参:views
+        4.是则return true  ，否则return 403 
+        '''
+        #获取用户名
+        user_name = request.user
+        #获取当前URL
+        cur_url = request.path
+        #根据用户名查询是否为管理员
+        user_info = User.objects.filter(username = user_name).first()
+        if user_info:
+            is_superuser = int(user_info.is_superuser)
+            if is_superuser == 1:
+                per_info = models.App1Permission .objects.filter(user_group = 'admin').all()
+                if per_info:
+                    per_list = []
+                    for i in per_info:
+                        per_list.append(i.views_func)
+                    if cur_url in per_list:
+                       return func(request,*args,**kwargs)
+                    else:
+                        return render(request,'error_403.html')
+                else:
+                    return render(request,'error_403.html')
+            elif is_superuser == 0:
+                per_info = models.App1Permission .objects.filter(user_group = 'others').all()
+                if per_info:
+                    per_list = []
+                    for i in per_info:
+                        per_list.append(i.views_func)
+                    if cur_url in per_list:
+                       return func(request,*args,**kwargs)
+                    else:
+                        return render(request,'error_403.html')
+                else:
+                    return render(request,'error_403.html')
+        else:
+            return render(request,'error_403.html')   
+    return wrapper
 
 # 127.0.0.1:5000 (仅输入IP+PORT) 判断是否在登录状态
 def host(request):
@@ -125,6 +146,7 @@ def logout(request):
     return redirect('/login/')
 
 #用户主页
+@permission_check
 def home(request):
     if request.method == 'GET':
         #查询书本的表单
@@ -143,6 +165,7 @@ def home(request):
         return render(request,'home.html',{'form':form,'list1':book_info,'dic1':dic1})
 
 #用户主页翻页
+@permission_check
 def home_page(request):
     number = request.GET.get('number')
     #print(number)
@@ -295,7 +318,7 @@ def search_by_type(request):
 
 #录入书本
 @login_required
-@permission_required('app1.views_addbook',raise_exception=True)
+#@permission_required('app1.views_addbook',raise_exception=True)
 def add_book(request):
     if request.method == "GET":
         form = My_forms.BooksForm
