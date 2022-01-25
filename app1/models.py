@@ -14,12 +14,7 @@ class Books(models.Model):
     add_book_time = CharField(max_length=100)
 
 # #用户视图的权限表
-class Permission(models.Model):
-    class Meta:
-        permissions = (
-            ('views_addbook', '录入书本'),
-            ('views_searchbook', '查找书本'),
-            ('views_downloadbook', '下载书本'),
-            ('views_addusers', '批量导入用户'),
-            ('views_downloadexcel', '下载批量导入用户excel模板'),
-        )
+class App1Permission(models.Model):
+    user_group = CharField(max_length=50)
+    views_func = CharField(max_length=50)
+    description = CharField(max_length=50)
