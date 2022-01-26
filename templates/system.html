@@ -25,19 +25,19 @@
                     </div>
                     <ul class="nav navbar-nav">
 						<li>
-							 <a href="/management/user">User</a>
+							 <a href="/management/user/">User</a>
 						</li>
 						<li>
-							 <a href="/management/book">Book</a>
+							 <a href="/management/book/">Book</a>
 						</li>
                         <li class="active">
-                            <a href="/management/system">System</a>
+                            <a href="/management/system/">System</a>
                         </li>
                     </ul>
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
                             <li>
-                                <a style="margin-right: 100px;" href="/home">Go Back</a>
+                                <a style="margin-right: 100px;" href="/home/">Go Back</a>
                             </li>
                         </ul>
                     </div>
@@ -48,15 +48,15 @@
                 <div style="float: left;" class="container">
                     <div class="row clearfix">
                         <div style="padding-left:0" class="col-md-12 column">
-                            <div style="margin-right: 15px;" class="{{ dic1['style'] }}">
+                            <div style="margin-right: 15px;" class="{{ dic1.style }}">
                                 <h4>
-                                    {{ dic1['title'] }}
-                                </h4> <strong>{{ dic1['title'] }}</strong>{{ dic1['message'] }}
+                                    {{ dic1.title }}
+                                </h4> <strong>{{ dic1.title }}</strong>{{ dic1.message }}
                             </div>
                         </div>
                     </div>
                 </div> 
-                <a id="modal-207274" href="/management/refresh?cur_url=/management/system" role="button" class="btn btn-default btn-primary" style="float:right;font-size: smaller;" data-toggle="modal">Refresh</a>
+                <a id="modal-207274" href="/management/refresh?cur_url=/management/system/" role="button" class="btn btn-default btn-primary" style="float:right;font-size: smaller;" data-toggle="modal">Refresh</a>
                 <a id="modal-207274" href="#modal-container-207274" role="button" class="btn btn-default" style="float:right;font-size: smaller;" data-toggle="modal">New Per</a>
                 <a id="modal-207276" href="#modal-container-207276" role="button" class="btn btn-default btn-primary" style="float:right;font-size: smaller;" data-toggle="modal">Upload</a>
                 <div class="modal fade" id="modal-container-207274" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -69,15 +69,14 @@
                                 </h4>
                             </div>
                             <div class="modal-body">
-                                <form role="form" action="/management/system/permission/add" method="post">
-                                    {{ form.csrf_token }}
+                                <form role="form" action="/management/system/permission/add/" method="post">
+                                    {% csrf_token %}
                                     <div class="form-group">
                                         <label for="group_name">group name</label>
                                         <select name="group_name" class="form-control">
                                             <option value="None">Please Select</option>
-                                            {% for select_value in list2 %}
-                                                <option value="{{ select_value }}">{{ select_value }}</option>
-                                            {% endfor %}
+                                            <option value="admin">admin</option>
+                                            <option value="others">others</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -103,10 +102,10 @@
                                 </h4>
                             </div>
                             <div class="modal-body">
-                                <form role="form" action="/management/system/permission/upload" method="post" enctype="multipart/form-data">
-                                    {{ form1.csrf_token }}
+                                <form role="form" action="/management/system/permission/upload/" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="file1">File input</label><input type="file" name="file1" />
+                                        <label for="permission_file">File input</label><input type="file" name="permission_file" />
                                         <p class="help-block">
                                             The template download link is as follows:
                                             <a href="/management/system/permission/upload/download">Click to download</a>
@@ -140,22 +139,21 @@
                     </thead>
                     <tbody>
                         {% for item in list1 %}
-                            <tr class="{{ item['style'] }}">
+                            <tr class="{{ item.style }}">
                                 <td>
-                                    {{ item['id'] }}
+                                    {{ item.id }}
                                 </td>
                                 <td>
-                                    {{ item['name'] }}
+                                    {{ item.user_group }}
                                 </td>
                                 <td>
-                                    {{ item['url'] }}
+                                    {{ item.views_func }}
                                 </td>
                                 <td>
-                                    {{ item['description'] }} 
+                                    {{ item.description }} 
                                 </td>
                                 <td>
-                                    {% set id=item['id'] %}
-                                    <a id="modal-207275" onclick="parameter_id('{{ id }}')" href="#modal-container-207275" role="button" style="font-size: x-small;" class="btn btn-default" data-toggle="modal">Update</a><a role="button" class="btn btn-default btn-primary" style="margin-left: 15px;font-size: x-small;" href="/management/system/permission/delete?id={{ item['id'] }}">Delete</a>
+                                    <a id="modal-207275" onclick="parameter_id('{{ item.id }}')" href="#modal-container-207275" role="button" style="font-size: x-small;" class="btn btn-default" data-toggle="modal">Update</a><a role="button" class="btn btn-default btn-primary" style="margin-left: 15px;font-size: x-small;" href="/management/system/permission/delete?id={{ item.id }}">Delete</a>
                                 </td>
                             </tr>  
                         {% endfor %}
@@ -169,8 +167,8 @@
                                         </h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form role="form" action="/management/system/permission/update" method="post">
-                                            {{ form.csrf_token }}
+                                        <form role="form" action="/management/system/permission/update/" method="post">
+                                            {% csrf_token %}
                                             <div class="form-group">
                                                 <label for="id">id</label><input type="text" class="form-control" id="updateDeptId" name="id"  readonly="readonly" />
                                             </div>
@@ -178,9 +176,8 @@
                                                 <label for="group_name">group name</label>
                                                 <select name="group_name" class="form-control">
                                                     <option value="None">Please Select</option>
-                                                    {% for select_value in list2 %}
-                                                        <option value="{{ select_value }}">{{ select_value }}</option>
-                                                    {% endfor %}
+                                                    <option value="admin">admin</option>
+                                                    <option value="others">others</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
@@ -205,30 +202,30 @@
                     </div>
                     <div class="col-md-4 column">
                         <ul class="pagination">
-                            <li class="{{ dic1['active_Prev'] }}">
-                                {% if dic1['current_page_number'] <=2  %}
+                            <li class="{{ dic1.active_Prev }}">
+                                {% if dic1.current_page_number <= 2 %}
                                     <a href="/management/system/page?number=1">Prev</a>
                                 {% else %}
-                                    <a href="/management/system/page?number={{ dic1['current_page_number']-1 }}">Prev</a>
+                                    <a href="/management/system/page?number={{ dic1.current_page_number|add:-1 }}">Prev</a>
                                 {% endif %}
                                </li>
-                            <li class="{{ dic1['active1'] }}">
+                            <li class="{{ dic1.active1 }}">
                                  <a href="/management/system/page?number=1">1</a>
                             </li>
-                            <li class="{{ dic1['active2'] }}">
+                            <li class="{{ dic1.active2 }}">
                                  <a href="/management/system/page?number=2">2</a>
                             </li>
-                            <li class="{{ dic1['active3'] }}">
+                            <li class="{{ dic1.active3 }}">
                                  <a href="/management/system/page?number=3">3</a>
                             </li>
-                            <li class="{{ dic1['active4'] }}">
+                            <li class="{{ dic1.active4 }}">
                                  <a href="/management/system/page?number=4">4</a>
                             </li>
-                            <li class="{{ dic1['active5'] }}">
+                            <li class="{{ dic1.active5 }}">
                                  <a href="/management/system/page?number=5">5</a>
                             </li>
-                            <li class="{{ dic1['active_next'] }}">
-                                 <a href="/management/system/page?number={{ dic1['current_page_number']+1 }}">Next</a>
+                            <li class="{{ dic1.active_next }}">
+                                 <a href="/management/system/page?number={{ dic1.current_page_number|add:1 }}">Next</a>
                             </li>
                         </ul>
                     </div>
