@@ -46,3 +46,19 @@ class UpdateBooksForm(forms.Form):
     book_description = forms.CharField(required = False,max_length=200,error_messages={"max_length":"book_description长度不能大于200!"})
     issue_year = forms.CharField(required = False,min_length=1,max_length=50,error_messages={"min_length":"issue_year长度不能小于1!","max_length":"issue_year长度不能大于50!"})
     file_name = forms.CharField(required = False,min_length=1,max_length=100,error_messages={"min_length":"file_name长度不能小于1!","max_length":"file_name长度不能大于50!"})
+
+#添加permission表单
+class AddPermissionForm(forms.Form):
+    group_name = forms.CharField(min_length=1,max_length=50,error_messages={"required":"用户组不能为空!","min_length":"用户组长度不能小于1!","max_length":"用户组长度不能大于50!"})
+    url = forms.CharField(min_length=1,max_length=50,error_messages={"required":"URL不能为空!","min_length":"URL长度不能小于1!","max_length":"URL长度不能大于50!"})
+    description = forms.CharField(min_length=1,max_length=50,error_messages={"required":"description不能为空!","min_length":"description长度不能小于1!","max_length":"description长度不能大于50!"})
+
+#修改permission表单
+class UpdatePermissionForm(forms.Form):
+    group_name1 = forms.CharField(required = False,min_length=1,max_length=50,error_messages={"min_length":"用户组长度不能小于1!","max_length":"用户组长度不能大于50!"})
+    url1 = forms.CharField(required = False,min_length=1,max_length=50,error_messages={"min_length":"URL长度不能小于1!","max_length":"URL长度不能大于50!"})
+    description1 = forms.CharField( required = False,min_length=1,max_length=50,error_messages={"min_length":"description长度不能小于1!","max_length":"description长度不能大于50!"})
+
+#批量导入permission
+class UploadPermissionForm(forms.Form):
+    permission_file = forms.FileField(required = True,allow_empty_file = False,error_messages={"required":"文件不能为空!","empty":"不允许上传空文件!"})
