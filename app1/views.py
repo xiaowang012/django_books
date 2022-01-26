@@ -141,11 +141,13 @@ def register(request):
             
 #用户登出
 @login_required
+@permission_check
 def logout(request):
     auth.logout(request)
     return redirect('/login/')
 
 #用户主页
+@login_required
 @permission_check
 def home(request):
     if request.method == 'GET':
@@ -165,6 +167,7 @@ def home(request):
         return render(request,'home.html',{'form':form,'list1':book_info,'dic1':dic1})
 
 #用户主页翻页
+@login_required
 @permission_check
 def home_page(request):
     number = request.GET.get('number')
@@ -200,7 +203,7 @@ def home_page(request):
         
 #用户查询书本(书名查询)
 @login_required
-# @permission_required('app1.views_searchbook',raise_exception=True)
+@permission_check
 def search_book(request):
     #获取url中的页码参数
     num = request.GET.get('num')
@@ -282,6 +285,8 @@ def search_book(request):
                     return HttpResponse('参数错误!')
 
 #按类型查询表格翻页
+@login_required
+@permission_check
 def search_by_type(request):  
     #从URL获取书本类型参数和页码
     book_type = request.GET.get('type_1')
@@ -318,7 +323,7 @@ def search_by_type(request):
 
 #录入书本
 @login_required
-#@permission_required('app1.views_addbook',raise_exception=True)
+@permission_check
 def add_book(request):
     if request.method == "GET":
         form = My_forms.BooksForm
@@ -363,7 +368,7 @@ def add_book(request):
 
 #下载书本
 @login_required
-#@permission_required('app1.views_downloadbook',raise_exception=True)
+@permission_check
 def download_book(request):
     #获取book id 参数
     book_id = request.GET.get('code')
@@ -408,8 +413,9 @@ def download_book(request):
             return HttpResponse('书本不存在!')
 
 #管理界面用户管理
+@login_required
+@permission_check
 def user_mgr(request):
-    form = My_forms.AddUserForm()
     if request.method == 'GET':
         #查询用户数据
         dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
@@ -430,9 +436,11 @@ def user_mgr(request):
             del data.is_superuser
             #为表格加随机样式
             data.style = random.choice(style_list)
-        return render(request,'user.html',{'user_list':user_info,'dic1':dic1,'form':form})
+        return render(request,'user.html',{'user_list':user_info,'dic1':dic1})
 
 #管理界面用户管理翻页
+@login_required
+@permission_check
 def user_page(request):
     number = request.GET.get('number')
     try:
@@ -471,6 +479,8 @@ def user_page(request):
             return render(request,'user.html',{'user_list':user_info,'dic1':dic1,'form':form})
      
 #管理界面用户管理 ：修改用户组(admin切换成others，others切换成admin)
+@login_required
+@permission_check
 def change_group(request):
     userid = request.GET.get('userid')
     group = request.GET.get('group')
@@ -496,6 +506,8 @@ def change_group(request):
         return HttpResponse('参数错误!')
 
 #管理界面用户管理 ：删除指定用户
+@login_required
+@permission_check
 def delete_user(request):
     userid = request.GET.get('userid')
     try:
@@ -512,7 +524,7 @@ def delete_user(request):
 
 #批量导入用户
 @login_required
-#@permission_required('app1.views_addusers',raise_exception=True)
+@permission_check
 def add_users(request):
     if request.method == "POST":
         #这里实例表单需要同时传入request.POST和request.FILE 否则FileFied验证一直返回False
@@ -612,7 +624,7 @@ def add_users(request):
 
 #批量注册用户下载excel模板
 @login_required
-#@permission_required('app1.views_downloadexcel',raise_exception=True)
+@permission_check
 def download_upload_user_template(request):
     if request.method == 'GET':
         user_template_file = os.getcwd() + os.path.join(os.sep,'media','user_template_file.zip')
@@ -630,7 +642,9 @@ def download_upload_user_template(request):
     elif request.method == 'POST':
         return render(request,'error_404.html')
 
-#刷新权限PERMISSION_DICT的值
+#刷新页面
+@login_required
+@permission_check
 def refresh_permission(request):
     cur_url = request.GET.get('cur_url')
     if cur_url:
@@ -639,8 +653,9 @@ def refresh_permission(request):
         return HttpResponse('error!')
 
 #管理界面书本管理
+@login_required
+@permission_check
 def book_mgr(request):
-    form = My_forms.AddBooksForm()
     if request.method == 'GET':
         #查询用户数据
         dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
@@ -652,9 +667,11 @@ def book_mgr(request):
         for data in books_info:
             #为表格加随机样式
             data.style = random.choice(style_list)
-        return render(request,'book.html',{'list1':books_info,'dic1':dic1,'form':form})
+        return render(request,'book.html',{'list1':books_info,'dic1':dic1})
 
 #管理界面书本管理页面翻页
+@login_required
+@permission_check
 def book_page(request):
     number = request.GET.get('number')
     try:
@@ -684,6 +701,8 @@ def book_page(request):
             return render(request,'book.html',{'list1':books_info,'dic1':dic1,'form':form})
 
 #管理界面书本管理修改书本信息
+@login_required
+@permission_check
 def update_book(request):
     form = My_forms. UpdateBooksForm(request.POST)
     if request.method == 'POST':
@@ -759,10 +778,10 @@ def update_book(request):
             data.style = random.choice(style_list)
         return render(request,'book.html',{'list1':books_info,'dic1':dic1,'form':form})
     
-
 #管理界面书本管理删除书本信息
 #删除指定书本以及书本在数据库中的记录
 @login_required
+@permission_check
 def delete_book(request):
     #获取book id 参数
     book_id = request.GET.get('id')
@@ -787,6 +806,8 @@ def delete_book(request):
             return HttpResponse('书本不存在!')
 
 #管理界面书本管理添加书本
+@login_required
+@permission_check
 def add_book(request):
     if request.method == 'POST':
         form = My_forms.AddBooksForm(request.POST,request.FILES)
@@ -850,48 +871,296 @@ def add_book(request):
         return render(request,'book.html',{'list1':books_info,'dic1':dic1,'form':form})
 
 #管理界面系统权限管理
+@login_required
+@permission_check
 def system_mgr(request):
-    pass
+    if request.method == 'GET':
+        #查询用户数据
+        dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
+                'active_next':'','active_Prev':'','current_page_number':1}
+        #根据参数查询用户数据，一次10条
+        permissions_info = models.App1Permission. objects.all()[0:10]
+        #定义样式
+        style_list = ['success','info','warning','error']
+        for data in permissions_info:
+            #为表格加随机样式
+            data.style = random.choice(style_list)
+        return render(request,'system.html',{'list1':permissions_info,'dic1':dic1})
 
 #管理界面系统管理页面翻页
+@login_required
+@permission_check
 def system_page(request):
-    pass
+    number = request.GET.get('number')
+    try:
+        number = int(number)
+    except:
+        return HttpResponse('参数错误!')
+    else:
+        form = My_forms.AddUserForm()
+        if request.method == 'GET':
+            #查询用户数据
+            dic1 = {'active1':'','active2':'','active3':'','active4':'','active5':'',
+                    'active_next':'','active_Prev':'','current_page_number':number}
+            #根据页码改变分页的样式
+            if 1<=number<=5:
+                dic1['active'+str(number)] = 'active'
+            elif number>5:
+                dic1['active_next'] = 'active'
+            #根据参数查询用户数据，一次10条
+            search_start_num = (number-1)*10
+            search_end_num = number*10
+            permissions_info = models.App1Permission .objects.all()[search_start_num:search_end_num]
+            #定义样式
+            style_list = ['success','info','warning','error']
+            for data in permissions_info:
+                #为表格加随机样式
+                data.style = random.choice(style_list)
+            return render(request,'system.html',{'list1':permissions_info,'dic1':dic1,'form':form})
 
 #管理界面系统管理页面添加permission
+@login_required
+@permission_check
 def add_permission(request):
-    pass
+    if request.method == 'POST':
+        form = My_forms.AddPermissionForm(request.POST)
+        if form.is_valid():
+            group_name = request.POST.get('group_name')
+            url = request.POST.get('url')
+            description = request.POST.get('description')
+            if group_name and url and description:
+                #写入数据库
+                data = models.App1Permission (id = None ,user_group = group_name,views_func = url,description = description)
+                data.save()
+                #添加成功，返回成功的消息
+                message = '添加权限: (' + group_name + ' '+ url +' '+ description+') 成功!'
+                style = 'alert alert-success alert-dismissable'
+                title = '添加成功! '
+            else:
+                #参数不全
+                message = '添加权限:  失败!'
+                style = 'alert alert-dismissable alert-danger'
+                title = '添加失败! '
+        else:
+            message = form.errors.as_text()
+            style = 'alert alert-dismissable alert-danger'
+            title = '添加失败! '
+        
+        #print(message)
+        #渲染页面
+        dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
+                'active_next':'','active_Prev':'','current_page_number':1}
+        #将报错提示加到dic1里面
+        dic1['message'] = message
+        dic1['style'] = style
+        dic1['title'] = title
+        #根据参数查询用户数据，一次10条
+        permission_info = models.App1Permission .objects.all()[0:10]
+        #定义样式
+        style_list = ['success','info','warning','error']
+        for data in permission_info:
+            #为表格加随机样式
+            data.style = random.choice(style_list)
+        return render(request,'system.html',{'list1':permission_info,'dic1':dic1,'form':form})
 
 #管理界面系统管理页面修改permission
+@login_required
+@permission_check
 def update_permission(request):
-    pass
+    form = My_forms.UpdatePermissionForm(request.POST)
+    if request.method == 'POST':
+        if form.is_valid():
+            id = request.POST.get('id')
+            group_name1 = request.POST.get('group_name')
+            url1 = request.POST.get('url')
+            description1 = request.POST.get('description')
+            if id != '':
+                permission_info = models.App1Permission .objects.filter (id = int(id)).first()
+                if permission_info:
+                    if group_name1 != '':
+                        msg1 = 'group_name'
+                        permission_info.user_group = str(group_name1)
+                    else:
+                        msg1 =''
+                    if url1 != '':
+                        msg2 = 'url'
+                        permission_info.views_func = str(url1)
+                    else:
+                        msg2 =''
+                    if description1 != '':
+                        msg3 = 'description'
+                        permission_info.description = str(description1)
+                    else:
+                        msg3 =''
+                    permission_info.save()
+                    mssage_full = msg1 + ' '+msg2+ ' ' + msg3 + ' '
+                    if mssage_full == '':
+                        message = '修改: None 成功!'
+                    else:
+                        message = '修改: '+ mssage_full +' 成功!'
+                    style = 'alert alert-success alert-dismissable'
+                    title = '修改成功! '
+                else:
+                    message = '用户不存在!'
+                    style = 'alert alert-dismissable alert-danger'
+                    title = '修改失败! '
+            else:
+                message = 'id 参数不存在!'
+                style = 'alert alert-dismissable alert-danger'
+                title = '修改失败! '     
+        else:
+            message = form.errors.as_text()
+            style = 'alert alert-dismissable alert-danger'
+            title = '修改失败! ' 
+        #渲染页面
+        #查询用户数据
+        dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
+                'active_next':'','active_Prev':'','current_page_number':1}
+        #添加提示信息到dic1
+        dic1['message'] = message
+        dic1['style'] = style
+        dic1['title'] = title
+        #根据参数查询用户数据，一次10条
+        permission_info = models.App1Permission .objects.all()[0:10]
+        #定义样式
+        style_list = ['success','info','warning','error']
+        for data in permission_info:
+            #为表格加随机样式
+            data.style = random.choice(style_list)
+        return render(request,'system.html',{'list1':permission_info,'dic1':dic1,'form':form})
 
 
 #管理界面系统管理页面删除permission
+@login_required
+@permission_check
 def delete_permission(request):
-    pass
+    #获取book id 参数
+    permission_id = request.GET.get('id')
+    try:
+        permission_id = int(permission_id)
+    except:
+        return HttpResponse('参数错误!')
+    else:
+        #根据ID查书本路径
+        search_data = models.App1Permission .objects.filter(id = permission_id).first()
+        if search_data:
+            #删除数据库这一条的数据
+            search_data.delete()
+            return redirect('/management/system/')
+        else:
+            return HttpResponse('permission不存在!')
 
 
 #管理界面系统管理页面批量导入permission
+@login_required
+@permission_check
 def upload_permissions(request):
-    pass
+    if request.method == "POST":
+        #这里实例表单需要同时传入request.POST和request.FILE 否则FileFied验证一直返回False
+        form = My_forms.UploadPermissionForm (request.POST,request.FILES)
+        if form.is_valid():
+            permission_file = request.FILES.get('permission_file')
+            if permission_file:
+                file_name = str(permission_file.name)
+                #判断是否为xls/xlsx文件,是则继续打开文件解析
+                if '.xls' in file_name or '.xlsx' in file_name:
+                    temp_file_name = str(time.time()) + file_name
+                    #linux 和Windows跨平台路径
+                    permission_file_dir = os.getcwd() + os.path.join(os.sep,'temp',temp_file_name)
+                    #写入指定位置
+                    with open(permission_file_dir,'wb') as f:
+                        for chunk in permission_file.chunks():
+                            f.write(chunk)
+                        f.close()
+                    work_book2 = xlrd.open_workbook (permission_file_dir)
+                    ws = work_book2.sheet_by_name('Sheet1')
+                    try:
+                        line_1_values = ws.row_values(0)
+                    except:
+                        message = '文件数据为空!'
+                        style = 'alert alert-dismissable alert-danger'
+                        title = '导入失败! '
+                    else:
+                        if line_1_values == ['user_group','url','description']:
+                            msg_list =[]
+                            for row in range(1,ws.nrows):
+                                try:
+                                    row_values_1 = ws.row_values(row)
+                                    user_group = str(row_values_1[0])
+                                    url = str(row_values_1[1])
+                                    description = str(row_values_1[2])
+                                except:
+                                    msg = ' 第 '+str(row) + '行数据错误! '
+                                else:
+                                    #写入数据库
+                                    data = models.App1Permission(id = None,user_group = user_group,\
+                                        views_func = url,description = description)
+                                    data.save()
+                                    msg = ' 权限: (' + user_group +' ' + url +' '+ description +') 导入成功! '
+                                msg_list.append(msg)
+                            #删除excel临时文件
+                            if os.path.isfile(permission_file_dir) == True:
+                                os.remove(permission_file_dir)
+                            msgs = ''
+                            for msg_info in msg_list:
+                                msgs +=msg_info
+                            if msgs == '':
+                                msgs = '用户表中无数据!'
+                            #定义消息提醒
+                            message = msgs
+                            style = 'alert alert-success alert-dismissable'
+                            title = '导入成功! '
+                        else:
+                            message = '用户表数据格式损坏，请重新上传文件!!'
+                            style = 'alert alert-dismissable alert-danger'
+                            title = '导入失败! '
+                else:
+                    message = '文件类型错误!'
+                    style = 'alert alert-dismissable alert-danger'
+                    title = '导入失败! '
+            else:
+                message = '找不到文件!'
+                style = 'alert alert-dismissable alert-danger'
+                title = '导入失败! '
+        else:
+            message = form.errors.as_text()
+            style = 'alert alert-dismissable alert-danger'
+            title = '导入失败! '
+        #返回对应的提示信息到前端
+        #查询用户数据
+        dic1 = {'active1':'active','active2':'','active3':'','active4':'','active5':'',
+                'active_next':'','active_Prev':'','current_page_number':1}
+        #将提示信息加到dic1中
+        dic1['style'] = style
+        dic1['title'] = title
+        dic1['message'] = message
+        #查询用户数据
+        permission_info = models.App1Permission.objects.all()[0:10]
+        #定义样式
+        style_list = ['success','info','warning','error']
+        for data in permission_info:
+            #为表格加随机样式
+            data.style = random.choice(style_list)
+        return render(request,'system.html',{'list1':permission_info,'dic1':dic1,'form':form})
 
 
 #批量导入permission下载excel模板
+@login_required
+@permission_check
 def download_upload_permission_template(request):
-    file_name = 'UploadPermission.zip'
-    file_path = os.getcwd() + os.path.join(os.sep,'media',file_name )
-    if os.path.isfile(file_path) == True:
-        #打开指定文件准备传输
-        #循环读取文件
-        def sendfile(file_path):
-            with open(file_path, 'rb') as targetfile:
-                while True:
-                    data = targetfile.read(20*1024*1024)
-                    if not data:
-                        break
-                    yield data
-        response = Response(sendfile(file_path), content_type='application/octet-stream')
-        response.headers["Content-disposition"] = 'attachment; filename=%s' % file_name 
-        return response
-    else:  
-        return jsonify({'code':404,'message':'Unable to find resources'})
+    if request.method == 'GET':
+        permission_template_file = os.getcwd() + os.path.join(os.sep,'media','permission_template_file.zip')
+        if os.path.isfile(permission_template_file) == True:
+            try:
+                f = open(permission_template_file,'rb')
+                response =FileResponse(f)
+                response['Content-Type']='application/octet-stream'
+                response['Content-Disposition'] = 'attachment;filename=' + 'permission_template_file.zip'
+                return response
+            except:
+                return HttpResponse('下载失败!')
+        else:
+            return HttpResponse('模板文件不存在!')
+    elif request.method == 'POST':
+        return render(request,'error_404.html')
+    
