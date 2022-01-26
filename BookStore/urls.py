@@ -47,5 +47,5 @@ urlpatterns = [
     path('management/system/permission/update/',views.update_permission),
     path('management/system/permission/delete',views.delete_permission),
     path('management/system/permission/upload/',views.upload_permissions),
-    path('management/system/permission/upload/download/',views.download_upload_permission_template),
+    path('management/system/permission/upload/download',views.download_upload_permission_template),
 ]
