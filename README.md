@@ -82,6 +82,26 @@ python manage.py makemigrations app1
 
 python manage.py migrate app1
 
+创建完表结构之后，将测试数据（/testdata/django_database）导入到mysql中：
+
+登录mysql数据库进行以下操作：
+
+mysql -u root -p 输入密码
+
+use django_database;
+
+source G:\django_books\testdata\django_database.sql (windows)
+
+或者source /django_books/testdata/django_database.sql (Linux)
+
+创建好测试数据就可以登陆了。
+
+![](./img/create_test_data.png)
+
+
+
+
+
 
 
 
@@ -93,6 +113,8 @@ python manage.py migrate app1
 
 
 ## 3. 运行web应用程序
+
+在登录前可以创建一个超级用户：python manage.py createsuperuser 输入一次用户名，邮箱，两次密码即可创建成功。
 
 进入虚拟环境后：python manage.py runserver 0.0.0.0:5000 (ip和port可以任意指定，port不能被占用)即可运行该应用程序。目前写好的功能有：用户登录，用户注册，书本下载，书本查询，书本筛选，批量导入用户等等
 
