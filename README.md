@@ -1,11 +1,99 @@
-# django_BookManagement
-学习django的过程中写的一个练手小项目 书籍管理程序，目前只有批量导入用户，查询书籍，下载书籍等功能。  
-基于python3.6.5，数据库采用：mysql。  
-默认账号密码：admin/admin  
-运行项目步骤：  
-1.安装依赖包：pip install -r requirements.txt   
-2.迁移数据库：  
-$ python manage.py migrate   
-$ python manage.py makemigrations app1  
-$ python manage.py migrate app1  
-3.执行项目：python manage.py runserver 127.0.0.1:5000  
+# Python Flask 书本管理应用
+
+## 1.界面展示
+
+### （1）登录界面
+
+![](./img/login.png)
+
+###   (2) 注册用户界面
+
+![](./img/register.png)
+
+### （3） 普通用户书本查询下载界面
+
+![home](./img/home.png)
+
+### （4）管理员用户管理界面
+
+![](./img/user.png)
+
+### （5）管理员书本管理界面
+
+![book](./img/book.png)
+
+### （6）管理员权限管理界面
+
+​	![](./img/permission.png)
+
+### 	
+
+## 2.环境配置
+
+### （1）安装Python环境
+
+​	windows下：
+
+​			下载Python3.6以上版本（python.org）
+
+​	Linux(centos8)：
+
+​			自带python3.6.8
+
+![15](./img/15.png)
+
+### （2） 安装虚拟环境并安装依赖包
+
+​	windows下：
+
+​			安装virtualenv模块 ：pip install virtualenv
+
+​			创建虚拟环境文件夹：cmd中输入： virtualenv django_ENV(需要创建的虚拟环境文件夹名称)
+
+![windows_env](./img/windows_env.png)
+
+​			激活虚拟环境: 在cmd中进入flask_ENV\Scripts目录，输入：activate即可激活虚拟环境，退出虚拟环境: deactivate
+
+![20127105813](./img/20127105813.png)
+
+​			安装依赖包：激活虚拟环境后cd 进入项目目录，里面有一个requirements.txt依赖文件，安装只需要使用：pip install -r requirements.txt即可自动安装所有的依赖包。
+
+Linux下：
+
+​			创建虚拟环境：virtualenv -p python3.6 django_ENV
+
+![](./img/test_ENV.png)
+
+​			激活虚拟环境: source django_ENV/bin/activate
+
+![](./img/test_ENV_activate.png)
+
+​			除了上述步骤与windows不一样以外其他步骤均相同。
+
+### （3）创建表结构
+
+windows和Linux操作相同：
+
+​     需要手动创建对应的数据库（使用的是mysql）安装完mysql数据库之后，使用：mysql -u root -p 登录数据库，输入create database    django_database 创建名为：django_database (settings.py中的配置数据库名称为这个，也可以改为其他的，修改对应的配置即可)的数据库。然后创建表结构：使用命令：
+
+python manage.py migrate 
+
+python manage.py makemigrations app1
+
+python manage.py migrate app1
+
+
+
+
+
+
+
+
+
+
+
+## 3. 运行web应用程序
+
+进入虚拟环境后：python manage.py runserver 0.0.0.0:5000 (ip和port可以任意指定，port不能被占用)即可运行该应用程序。目前写好的功能有：用户登录，用户注册，书本下载，书本查询，书本筛选，批量导入用户等等
+
+![](./img/run.png)
