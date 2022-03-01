@@ -23,6 +23,19 @@ class RegisterForm(forms.Form):
         else:
             raise ValidationError("两次输入的密码不一致!")
 
+#修改密码表单
+class ChangeUserPassword(forms.Form):
+    old_password = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
+    new_password1 = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
+    new_password2 = forms.CharField(widget=PasswordInput,min_length=3,max_length=10,error_messages={"required":"密码不能为空!","min_length":"密码长度不能小于3!","max_length":"密码长度不能大于10!"})
+    def clean(self):  # 全局钩子 确认两次输入的密码是否一致。
+        val = self.cleaned_data.get("new_password1")
+        r_val = self.cleaned_data.get("new_password2")
+        if val == r_val:
+            return self.cleaned_data
+        else:
+            raise ValidationError("两次输入的密码不一致!")
+
 #录入书本信息的表单
 class AddBooksForm(forms.Form):
     bookname = forms.CharField(min_length=1,max_length=50,error_messages={"required":"书名不能为空!","min_length":"书名长度不能小于1!","max_length":"书名长度不能大于50!"})
