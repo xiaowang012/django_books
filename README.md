@@ -119,3 +119,39 @@ source G:\django_books\testdata\django_database.sql (windows)
 进入虚拟环境后：python manage.py runserver 0.0.0.0:5000 (ip和port可以任意指定，port不能被占用)即可运行该应用程序。目前写好的功能有：用户登录，用户注册，书本下载，书本查询，书本筛选，批量导入用户等等
 
 ![](./img/run.png)
+
+
+
+## 4.使用nginx +gunicorn 部署
+
+### （1）nginx的配置
+
+####         安装nginx ：yum install nginx
+
+​		（1）安装完成后查看nginx版本：nginx -v![](./img/20220301125754.png)
+
+
+
+​         （2）在/etc/nginx/nginx.conf中修改配置：vim /etc/nginx/nginx.conf    注：server中的端口为nginx的监听端口， location中的地址为gunicorn 运行django wsgi服务的地址，下面两个location为配置的静态资源地址。如果出现加载静态资源报403的情况，需要把nginx中的配置：user nginx; 改为：user root; 修改完成后按esc 冒号 输入：wq 保存退出vim。
+
+![企业微信截图_20220301130213](./img/20220301130213.png)
+
+​             (3) 重启nginx : nginx -s reload  查看nginx的服务 ：lsof -i:5000 查看到对应的进程即为配置成功 。运行nginx命令：nginx
+
+![企业微信截图_20220301131041](./img/20220301131041.png)
+
+### （2）使用gunicorn 运行服务
+
+​			（1）安装gunicorn 包:pip install gunicorn 
+
+​			（2）使用gunicorn 运行django项目：进入虚拟环境，项目目录，执行: gunicorn -w 4  -b 127.0.0.1:5001 BookStore.wsgi  & (-w 为进程数,-b 为绑定的host:port   BookStore为项目名称，由django-admin startproject projectname  创建， &表示后台运行)
+
+![2017](./img/2017.png)
+
+
+
+### （3）测试结果
+
+​              访问网页并查看接口的服务器是否为nginx，查看到Server: nginx/1.20.2表示部署成功
+
+![ng](./img/ng.png)
