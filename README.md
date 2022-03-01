@@ -1,4 +1,4 @@
-# Python Flask 书本管理应用
+# Python Django 书本管理应用
 
 ## 1.界面展示
 
